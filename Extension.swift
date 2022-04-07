@@ -6,9 +6,9 @@
 //
 
 import Foundation
-import UIKit
 import SwiftUI
 
+//MARK: - 封装扩展方法属性
 extension Color {
     init(hex: Int, alpha: Double = 1) {
         let components = (
@@ -23,75 +23,6 @@ extension Color {
             blue: components.B,
             opacity: alpha
         )
-    }
-}
-//MARK: - 手势
-typealias viewAction = (UIGestureRecognizer)->()
-
-//添加手势枚举
-extension UIView {
-    enum GestureENUM {
-        case tap //点击
-        case long //长按
-        case pan //拖拽
-        case roation //旋转
-        case swipe //轻扫
-        case pinch //捏合
-    }
-    
-    private struct AssociatedKeys {
-        static var actionKey = "gestureKey"
-    }
-    
-    @objc dynamic var action:viewAction? {
-        set {
-            objc_setAssociatedObject(self, &AssociatedKeys.actionKey, newValue, objc_AssociationPolicy.OBJC_ASSOCIATION_COPY)
-        }
-        get {
-            if let action = objc_getAssociatedObject(self, &AssociatedKeys.actionKey) as? viewAction {
-                return action
-            }
-            return nil
-        }
-    }
-    
-    @objc func viewTapAction(gesture: UIGestureRecognizer) {
-        if action != nil {
-            action!(gesture)
-        }
-    }
-    /// 添加手势
-    func addGesture( _ gesture : GestureENUM , response:@escaping viewAction) {
-        
-        self.isUserInteractionEnabled = true
-        switch gesture {
-        case .tap: //点击
-            let tapGesture = UITapGestureRecognizer(target: self, action: #selector(viewTapAction(gesture:)))
-            tapGesture.numberOfTouchesRequired = 1
-            tapGesture.numberOfTapsRequired = 1
-            self.addGestureRecognizer(tapGesture)
-            self.action = response
-        case .long: //长按
-            let longPress = UILongPressGestureRecognizer(target: self, action: #selector(viewTapAction(gesture:)))
-            self.addGestureRecognizer(longPress)
-            self.action = response
-        case .pan: //拖拽
-            let panGesture = UIPanGestureRecognizer(target: self, action: #selector(viewTapAction(gesture:)))
-            self.addGestureRecognizer(panGesture)
-            self.action = response
-        case .roation: // 旋转
-            let roation = UIRotationGestureRecognizer(target: self, action: #selector(viewTapAction(gesture:)))
-            self.addGestureRecognizer(roation)
-            self.action = response
-        case .swipe: //轻扫
-            let swipe = UISwipeGestureRecognizer(target: self, action: #selector(viewTapAction(gesture:)))
-            self.addGestureRecognizer(swipe)
-            self.action = response
-        case .pinch: //捏合
-            let pinch = UIPinchGestureRecognizer(target: self, action: #selector(viewTapAction(gesture:)))
-            self.addGestureRecognizer(pinch)
-            self.action = response
-        }
     }
 }
 /// 代码延迟运行
